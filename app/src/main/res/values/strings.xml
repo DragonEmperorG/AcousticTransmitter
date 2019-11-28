@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AudioTransmitter</string>
+    <string name="button_transmit_chirp">TransmitChirp</string>
 </resources>

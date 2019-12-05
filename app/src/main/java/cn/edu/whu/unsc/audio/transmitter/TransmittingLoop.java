@@ -7,6 +7,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.util.ArrayList;
+
 public class TransmittingLoop extends Thread {
     private final String TAG = "TransmittingLoop";
 
@@ -38,21 +40,48 @@ public class TransmittingLoop extends Thread {
                 .setTransferMode(TransmitterParameters.AUDIO_TRACK_TRANSFER_MODE)
                 .build();
 
-        float[] messages = new float[minBuffSize];
+        float[] messageSingleton = new float[minBuffSize];
         audioTrack.play();
 
-        double frequence = 8000.0;
-        for (int j = 0; j < 400; j++) {
-            for (int i = 0; i < minBuffSize; i++) {
-                messages[i] = (float) Math.cos(2.0 * Math.PI * frequence * TransmitterParameters.TIME_INTERVAL * i);
-            }
-            audioTrack.write(messages, 0, minBuffSize, AudioTrack.WRITE_BLOCKING);
+//        double frequence = 8000.0;
+//        for (int j = 0; j < 400; j++) {
+//            for (int i = 0; i < minBuffSize; i++) {
+//                messageSingleton[i] = (float) Math.cos(2.0 * Math.PI * frequence * TransmitterParameters.TIME_INTERVAL * i);
+//            }
+//            audioTrack.write(messageSingleton, 0, minBuffSize, AudioTrack.WRITE_BLOCKING);
+//
+//            frequence += 100;
+//        }
 
-            frequence += 100;
+        ChirpGenerator chirpGenerator = new ChirpGenerator(TransmitterParameters.SAMPLE_RATE, 15000, 0.042, 21000);
+        ArrayList<Float> chirpMessage = chirpGenerator.getChirp();
+        int chirpMessageSize = chirpMessage.size();
+
+        ArrayList<Float> chirpMessageCycle = new ArrayList<>();
+        int chirpMessageCycleLength = 1 * TransmitterParameters.SAMPLE_RATE;
+        for (int i = 0; i < chirpMessageCycleLength; i++) {
+            if (i < chirpMessageSize) {
+                chirpMessageCycle.add(chirpMessage.get(i));
+            } else {
+                chirpMessageCycle.add(0.0F);
+            }
+        }
+
+
+        int messageSingletonIndex = 0;
+        for (int cycleIndex = 0; cycleIndex < 60; cycleIndex++) {
+            for (int sampleIndexInCycle = 0; sampleIndexInCycle < chirpMessageCycleLength; sampleIndexInCycle++) {
+                int sampleIndex = chirpMessageCycleLength * cycleIndex + sampleIndexInCycle;
+                int minBuffSizeMod = sampleIndex % minBuffSize;
+                messageSingleton[minBuffSizeMod] = chirpMessageCycle.get(sampleIndexInCycle);
+                if (minBuffSizeMod == minBuffSize - 1) {
+                    audioTrack.write(messageSingleton, 0, minBuffSize, AudioTrack.WRITE_BLOCKING);
+                }
+            }
         }
 
         audioTrack.stop();
         audioTrack.release();
-
     }
+
 }

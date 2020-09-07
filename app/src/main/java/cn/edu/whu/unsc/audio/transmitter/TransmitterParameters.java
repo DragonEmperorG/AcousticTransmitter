@@ -3,6 +3,7 @@ package cn.edu.whu.unsc.audio.transmitter;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
+import android.media.MediaRecorder;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -28,4 +29,7 @@ public class TransmitterParameters {
     static final int AUDIO_TRACK_PERFORMANCE_MODE = AudioTrack.PERFORMANCE_MODE_LOW_LATENCY;
     //
     static final int AUDIO_TRACK_TRANSFER_MODE = AudioTrack.MODE_STREAM;
+
+    // Audio Recorder
+    static final int AUDIO_RECORD_SOURCE = MediaRecorder.AudioSource.UNPROCESSED;
 }

@@ -24,7 +24,7 @@ public class TransmittingLoop extends Thread {
                 TransmitterParameters.AUDIO_FORMAT_CHANNEL,
                 TransmitterParameters.AUDIO_FORMAT_ENCODING);
 
-        AudioTrack audioTrack = new AudioTrack.Builder()
+        AudioTrack audioTracker = new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
                         .setUsage(TransmitterParameters.AUDIO_ATTRIBUTE_USAGE)
                         .setContentType(TransmitterParameters.AUDIO_ATTRIBUTE_CONTENT_TYPE)
@@ -41,7 +41,7 @@ public class TransmittingLoop extends Thread {
                 .build();
 
         float[] messageSingleton = new float[minBuffSize];
-        audioTrack.play();
+        audioTracker.play();
 
 //        double frequence = 8000.0;
 //        for (int j = 0; j < 400; j++) {
@@ -53,7 +53,7 @@ public class TransmittingLoop extends Thread {
 //            frequence += 100;
 //        }
 
-        ChirpGenerator chirpGenerator = new ChirpGenerator(TransmitterParameters.SAMPLE_RATE, 15000, 0.042, 21000);
+        ChirpGenerator chirpGenerator = new ChirpGenerator(TransmitterParameters.SAMPLE_RATE, 15000, 0.2, 21000);
         ArrayList<Float> chirpMessage = chirpGenerator.getChirp();
         int chirpMessageSize = chirpMessage.size();
 
@@ -75,13 +75,13 @@ public class TransmittingLoop extends Thread {
                 int minBuffSizeMod = sampleIndex % minBuffSize;
                 messageSingleton[minBuffSizeMod] = chirpMessageCycle.get(sampleIndexInCycle);
                 if (minBuffSizeMod == minBuffSize - 1) {
-                    audioTrack.write(messageSingleton, 0, minBuffSize, AudioTrack.WRITE_BLOCKING);
+                    audioTracker.write(messageSingleton, 0, minBuffSize, AudioTrack.WRITE_BLOCKING);
                 }
             }
         }
 
-        audioTrack.stop();
-        audioTrack.release();
+        audioTracker.stop();
+        audioTracker.release();
     }
 
 }

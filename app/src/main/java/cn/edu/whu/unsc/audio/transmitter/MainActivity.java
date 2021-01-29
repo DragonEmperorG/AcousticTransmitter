@@ -21,8 +21,8 @@ import android.widget.Button;
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
                 // Read Test Audio Sequence Data
-                TransmittingLoop transmittingLoop =  new TransmittingLoop();
-                transmittingLoop.start();
+                TransmittingLoop transmittingLoop = new TransmittingLoop();
+                transmittingLoop.startTransmittingLoop();
 
                 Log.d(TAG, "Chirp Transmitter Complete! ");
             }

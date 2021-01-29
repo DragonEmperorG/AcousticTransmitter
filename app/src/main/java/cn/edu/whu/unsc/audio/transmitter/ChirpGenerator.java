@@ -3,6 +3,7 @@ package cn.edu.whu.unsc.audio.transmitter;
 import java.util.ArrayList;
 
 public class ChirpGenerator {
+
     static private String TAG = ChirpGenerator.class.getName();
 
     private int sampleRate = 48000;

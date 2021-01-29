@@ -4,16 +4,33 @@ import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.logging.Logger;
 
 public class TransmittingLoop extends Thread {
+
     private final String TAG = "TransmittingLoop";
+
+    private boolean transmittingLoopRunningFlag = false;
+
+    private StringBuilder stringBuilder4Log;
 
     TransmittingLoop() {
 
+    }
+
+    public void startTransmittingLoop() {
+        transmittingLoopRunningFlag = true;
+        this.start();
+    }
+
+    public void stopTransmittingLoop() {
+        transmittingLoopRunningFlag = false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -40,20 +57,14 @@ public class TransmittingLoop extends Thread {
                 .setTransferMode(TransmitterParameters.AUDIO_TRACK_TRANSFER_MODE)
                 .build();
 
+        stringBuilder4Log = new StringBuilder();
+        stringBuilder4Log.append(String.format(Locale.CHINA, "  sample rate     : %d Hz (configured %d Hz)\n", audioTracker.getSampleRate(), TransmitterParameters.SAMPLE_RATE));
+        Log.i(TAG, stringBuilder4Log.toString());
+
         float[] messageSingleton = new float[minBuffSize];
         audioTracker.play();
 
-//        double frequence = 8000.0;
-//        for (int j = 0; j < 400; j++) {
-//            for (int i = 0; i < minBuffSize; i++) {
-//                messageSingleton[i] = (float) Math.cos(2.0 * Math.PI * frequence * TransmitterParameters.TIME_INTERVAL * i);
-//            }
-//            audioTrack.write(messageSingleton, 0, minBuffSize, AudioTrack.WRITE_BLOCKING);
-//
-//            frequence += 100;
-//        }
-
-        ChirpGenerator chirpGenerator = new ChirpGenerator(TransmitterParameters.SAMPLE_RATE, 15000, 0.2, 21000);
+        ChirpGenerator chirpGenerator = new ChirpGenerator(TransmitterParameters.SAMPLE_RATE, 19000, 0.45, 19500);
         ArrayList<Float> chirpMessage = chirpGenerator.getChirp();
         int chirpMessageSize = chirpMessage.size();
 
@@ -65,6 +76,11 @@ public class TransmittingLoop extends Thread {
             } else {
                 chirpMessageCycle.add(0.0F);
             }
+        }
+
+        int cycleCounter = 0;
+        while (transmittingLoopRunningFlag) {
+
         }
 
 
